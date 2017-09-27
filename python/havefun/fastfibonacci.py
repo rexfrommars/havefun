@@ -28,7 +28,7 @@ class FibonacciMachine(object):
         """
         f(2n-1) = f(n-2)*f(n) + f(n-1)*f(n+1)
         f(2n)   = f(n) * (f(n-1) + f(n+1))
-        :return: f(2n-2), f(2n-1), f(2n), f(2n+1)
+        :return: f(2n-1), f(2n), f(2n+1)
         """
         fn_m2 = fn - fn_m1
         f2n_m1 = fn_m2 * fn + fn_m1 * fn_p1
