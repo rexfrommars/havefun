@@ -1,0 +1,10 @@
+
+https://github.com/scrapy/scrapy/issues/990
+
+python duck/spiders/myseek.py
+
+scrapy crawl myseek  # FEED_URI configured in duck/settings.py
+scrapy crawl myseek -o jobs.jl  # json-line
+
+scrapy shell 'http://example.org'
+
