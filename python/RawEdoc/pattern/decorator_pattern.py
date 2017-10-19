@@ -3,6 +3,7 @@
 
 # TODO getattr
 
+
 class Marine:
     def __init__(self, damage, armor):
         self.damage = damage

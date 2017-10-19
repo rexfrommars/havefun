@@ -24,5 +24,5 @@ def test():
     def bar():
         sleep(1.1)
 
-    assert foo() == True
-    assert bar() == False
+    assert foo() is True
+    assert bar() is False
