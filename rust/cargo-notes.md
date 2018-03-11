@@ -1,13 +1,16 @@
 
 
-cargo new bin-proj-name --bin
-cargo new lib-proj
+* `cargo new bin-proj-name --bin`
+* `cargo new lib-proj`
 
-cargo build
+---
 
-cargo run
+* `cargo build`
+* `cargo run`
 
-cargo update
+* `cargo update`
 
-cargo test
-cargo test -- --ignored
+---
+
+* `cargo test`
+* `cargo test -- --ignored`
