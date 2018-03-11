@@ -7,7 +7,12 @@ use std::io;
 use std::cmp::Ordering;
 use rand::Rng;
 
+mod another;
+use another::another_pub_fn;
+
 fn main() {
+	another_pub_fn();
+
     println!("Guess the number!");
 
     let secret_number = rand::thread_rng().gen_range(1, 101);
@@ -36,3 +41,14 @@ fn main() {
 	    }
 	}
 }
+
+#[test]
+fn it_works() {}
+
+#[test]
+fn it_works_2() {}
+
+#[test]
+#[ignore]
+fn test_to_ignore() {} // run with "cargo test -- --ignored"
+
