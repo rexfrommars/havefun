@@ -1,0 +1,6 @@
+[package]
+name = "raw_edoc"
+version = "0.1.0"
+authors = ["Rex Junshu Wang <rex.wang.starry@gmail.com>"]
+
+[dependencies]
