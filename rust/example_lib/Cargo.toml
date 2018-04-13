@@ -1,0 +1,6 @@
+[package]
+name = "example_lib"
+version = "0.1.0"
+authors = ["Rex Junshu Wang <rex.wang.starry@gmail.com>"]
+
+[dependencies]
