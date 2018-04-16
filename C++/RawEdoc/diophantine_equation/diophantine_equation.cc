@@ -60,6 +60,7 @@ vector<pair <long, long>> Dioph::solEquaStr(long long n)
 // prime factorisation
 vector<pair <int, int>> factorise(long long number)
 {
+	// TODO this functon could be enhanced
 	vector<pair<int, int>> results;
 
 	for (auto f = 2; f * f <= number; ++f) {

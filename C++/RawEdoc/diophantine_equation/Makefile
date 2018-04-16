@@ -6,3 +6,5 @@ all:
 
 clean:
 	rm -f a.out
+	rm -rf a.out.dSYM
+
