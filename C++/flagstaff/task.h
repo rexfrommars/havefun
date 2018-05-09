@@ -47,7 +47,6 @@ public:
 	static Task* top();
 	static void pop();
 
-
 private:
 	TaskQueue() = delete;
 };

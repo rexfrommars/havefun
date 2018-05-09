@@ -1,24 +1,31 @@
-#include <sys/epoll.h>
+#include "flagstaff.h"
 
+#include <sys/epoll.h>
 #include <iostream>
+
 #include "task.h"
 
 // TODO
 // eventfd, signalfd, timerfd
 
 using namespace std;
+using namespace flagstaff;
 
-class FlagStaffEngine
+namespace {
+
+class FlagStaffEngine : public Engine
 {
 public:
-	static FlagStaffEngine* getInstance();
-
 	int run();
-
-private:
-	static FlagStaffEngine* _instance;
+	int addTask(Task* task)
+	{
+		TaskQueue::push(task);
+		return 0;
+	}
 
 	FlagStaffEngine();
+
+private:
 	FlagStaffEngine(const FlagStaffEngine&) = delete;
 	FlagStaffEngine& operator= (const FlagStaffEngine&) = delete;
 
@@ -28,18 +35,19 @@ private:
 	// TODO heere TIME-TASK-Q std::priority_queue
 };
 
-FlagStaffEngine* FlagStaffEngine::_instance = nullptr;
+FlagStaffEngine* _engine = nullptr;
 
-FlagStaffEngine* FlagStaffEngine::getInstance()
-{
-	if (_instance == nullptr) {
-		_instance = new FlagStaffEngine();
-	}
-
-	return _instance;
 }
 
-FlagStaffEngine::FlagStaffEngine() : _epoll_errno(0), _epollfd(-1)
+Engine* flagstaff::GetEngineInstance()
+{
+	if (_engine == nullptr) {
+		_engine = new FlagStaffEngine();
+	}
+	return _engine;
+}
+
+FlagStaffEngine::FlagStaffEngine() : Engine(), _epoll_errno(0), _epollfd(-1)
 {
 	_epollfd = epoll_create1(EPOLL_CLOEXEC);
 	_epoll_errno = errno;
@@ -80,34 +88,3 @@ int FlagStaffEngine::run()
 	return 0;
 }
 
-
-void test_chrono()
-{
-	using namespace flagstaff;
-	NoopTask a("a");
-	NoopTask b("b");
-
-	a.delay(2000);
-	b.delay(4000);
-
-	TaskQueue::push(&a);
-	TaskQueue::push(&b);
-
-	Task *t = TaskQueue::top();
-	cout << t->name() << endl;
-
-	TaskQueue::pop();
-	TaskQueue::pop();
-	TaskQueue::pop();
-}
-
-
-int main()
-{
-	std::cout << "flagstaff!!" << std::endl;
-
-	test_chrono();
-
-	auto engine = FlagStaffEngine::getInstance();
-	return engine->run();
-}
