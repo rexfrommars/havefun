@@ -2,16 +2,22 @@
 CXX=clang++
 CXX_FLAGS=-g -O0 -Wall -Werror
 
-all: clean move98 move11
+all: clean move98 move11 move2
 
-move98:
+move98: move.cc
 	$(CXX) -o move98 move.cc $(CXX_FLAGS) -std=c++98
 
-move11:
+move11: move.cc
 	$(CXX) -o move11 move.cc $(CXX_FLAGS) -std=c++11
 
+move2: move2.cc
+	#$(CXX) -o move2 move2.cc $(CXX_FLAGS) -std=c++11
+
+values: values.cc
+	$(CXX) -o values values.cc $(CXX_FLAGS) -std=c++11
+
 clean:
-	rm -rf move98 move11
+	rm -rf *.dSYM move98 move11 move2 values
 
 # "otool -L move98", this is the Mac alternative of Linux ldd
 

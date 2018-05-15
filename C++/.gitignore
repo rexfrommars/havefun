@@ -1,4 +1,7 @@
 
-a.out
-a.out.dSYM
 
+a.out
+*.dSYM
+
+cmake-build-debug
+CMakeLists.txt

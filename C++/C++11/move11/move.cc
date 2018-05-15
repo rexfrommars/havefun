@@ -131,9 +131,11 @@ int main()
     return 0;
 }
 
+/*
 # https://docs.microsoft.com/en-us/cpp/cpp/rvalue-reference-declarator-amp-amp
 
 # What is the significance of "const rvalue"?
 
 # http://yacoder.guru/blog/2015/03/14/cpp-curiosities-std-move-that-doesnt-move/
 # http://yacoder.guru/blog/2015/05/06/cpp-curiosities-one-does-not-simply-move-a-const-object/
+*/
