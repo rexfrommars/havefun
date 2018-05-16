@@ -17,11 +17,11 @@ void h(Object const &) { _log_ }
 void h(Object &&) { _log_ }
 void h(Object const &&) { _log_ }
 
-void w(Object) { _log_ }    // 0th
-void w(Object &) { _log_ }
-void w(Object const &) { _log_ }
-void w(Object &&) { _log_ }
-void w(Object const &&) { _log_ }
+void w(Object) { _log_ }            // 0th
+void w(Object &) { _log_ }          // 1st
+void w(Object const &) { _log_ }    // 2nd
+void w(Object &&) { _log_ }         // 3rd
+void w(Object const &&) { _log_ }   // 4th
 
 int main()
 {
@@ -31,7 +31,6 @@ int main()
     {
         Object a;
         Object const b;
-
         f(Object());        // 2nd (T&&) -> (T const &)
         f(a);               // 1st (T&)
         f(b);               // 2nd (T const &)
@@ -66,9 +65,14 @@ int main()
     std::cout << std::string().assign(30, 'x') << std::endl;
     {
         Object a; (void)a;
-        Object const b;
-
-        w(Object());
+        Object const b; (void)b;
+#ifdef WITH_W
+        w(Object());        // ambiguous: 0, 3, 4, 2
+        w(a);               // ambiguous: 0, 1, 2
+        w(b);               // ambiguous: 0, 2
+        w(std::move(a));    // ambiguous: 0, 3, 4, 2
+        w(std::move(b));    // ambiguous: 0, 4, 2
+#endif
     }
 
     return 0;
