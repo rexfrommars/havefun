@@ -5,7 +5,10 @@
 
 # Moving to Modern C++
 
-## - [ ] Item 07 Distinguish between `()` and `{}` when creating objects
+## 
+
+## Item 07 
+Distinguish between `()` and `{}` when creating objects
 
 ## - [ ] Item 08 Prefer `nullptr` to `0` and `NULL`
 
