@@ -3,6 +3,7 @@
 #include <sys/epoll.h>
 #include <iostream>
 
+#include "log.h"
 #include "task.h"
 
 // TODO
@@ -11,21 +12,26 @@
 using namespace std;
 using namespace flagstaff;
 
+_FS_LOG_
+
 namespace {
 
 class FlagStaffEngine : public Engine
 {
 public:
 	int run();
-	int addTask(Task* task)
+	int addTask(std::shared_ptr<Task> const & task)
 	{
-		TaskQueue::push(task);
+		TaskQ::push(task);
 		return 0;
 	}
 
 	FlagStaffEngine();
 
 private:
+	// TODO
+	// super class has set these two function "delete"
+	// do we need to do it again?
 	FlagStaffEngine(const FlagStaffEngine&) = delete;
 	FlagStaffEngine& operator= (const FlagStaffEngine&) = delete;
 
@@ -57,10 +63,22 @@ int FlagStaffEngine::run()
 {
 	// TODO
 
-	for (int i = 5; i; --i) {
+	int wait_ms = -1;
+	while (true) {
+		auto task = TaskQ::safe_top();
+		if (task) {
+			_i << task->name() << " | " << task->wait_time_ms() << endl;
+			wait_ms = task->wait_time_ms();
+		}
+		else {
+			wait_ms = -1;
+		}
+
 		epoll_event event;
 
-		int num = epoll_wait(_epollfd, &event, 1, 2000);
+		_i << "wait time: " << wait_ms << endl;
+		int num = epoll_wait(_epollfd, &event, 1, wait_ms);
+
 		cout << "wake up ... " << num << " | " << errno << endl;
 
 		if (num > 0) {
@@ -80,6 +98,22 @@ int FlagStaffEngine::run()
 			// EINVAL
 
 			default:
+				break;
+			}
+		}
+
+		task = TaskQ::safe_top();
+		if (task && task->wait_time_ms() < 1) {
+			TaskQ::pop();
+			Task::ExecuteCode code = task->execute();
+			_i << "execute code: " << code << endl;
+			switch (code)
+			{
+			case Task::ExecuteCode::OK:
+				break;
+			case Task::ExecuteCode::REPEAT:
+				task->reset();
+				TaskQ::push(task);
 				break;
 			}
 		}

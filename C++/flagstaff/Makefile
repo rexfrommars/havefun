@@ -1,24 +1,22 @@
 
 
 CXX=g++-7
-CXX_FLAGS=-g -Wall -Werror
+CXX_FLAGS=-g -std=c++17 -Wall -Werror
 
 TARGET=flagstaff
 
 SRCS= \
-	main.cc \
+	log.cc \
 	flagstaff.cc \
 	task.cc \
+	main.cc \
 
 
-all: $(TARGET)
+all: clean $(TARGET)
 
 $(TARGET): $(SRCS)
-	$(CXX) -o flagstaff --std=c++14 -Wall -Werror -g --debug -O0 \
-		main.cc \
-		flagstaff.cc \
-		task.cc
-		
+	$(CXX) -o $(TARGET) $(CXX_FLAGS) $(SRCS)
+
 clean:
 	rm -f $(TARGET)
 

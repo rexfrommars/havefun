@@ -2,21 +2,27 @@
 
 #include <queue>
 
+#include "log.h"
+
+_FS_LOG_
+
 using namespace flagstaff;
 using namespace std;
 
-Task::Task(const string& name) : _name(name), _execute_time(Task::clock::now())
-{}
-
-void Task::delay(int ms)
+int IdleTask::InitIdleTask(int interval_ms, const string& name)
 {
-	chrono::duration<int, std::milli> duration_ms(ms);
-	_execute_time = clock::now() + duration_ms;
+	auto x = make_shared<IdleTask>(interval_ms, name);
+	TaskQ::push(x);
+
+	_i << "init IdleTask:" << name << " with interval:" << interval_ms << endl;
+	return 0;
 }
 
-void Task::pushToQueue()
+Task::ExecuteCode IdleTask::execute()
 {
-	TaskQueue::push(this);
+	_i << "This is IDLE task!" << endl;
+
+	return ExecuteCode::REPEAT;
 }
 
 namespace {
@@ -24,38 +30,40 @@ namespace {
 	class task_cmp
 	{
 	public:
-		bool operator() (const Task* a, const Task* b)
+		bool operator() (const shared_ptr<Task>& a, const shared_ptr<Task>& b)
 		{
-			return a->execute_time() > b->execute_time();
+			return a->next_execute_time() > b->next_execute_time();
 		}
 	};
 
-	std::priority_queue<Task*, std::vector<Task*>, task_cmp> _task_queue;
+	std::priority_queue<shared_ptr<Task>, std::vector<shared_ptr<Task>>, task_cmp> _task_queue;
 }
 
-
-void TaskQueue::push(Task* task)
+void TaskQ::push(const shared_ptr<Task>& task)
 {
 	_task_queue.push(task);
 }
 
-void TaskQueue::pop()
-{
-	_task_queue.pop();
-}
-
-Task* TaskQueue::top()
+shared_ptr<Task> TaskQ::top()
 {
 	return _task_queue.top();
 }
 
-ListenerTask::ListenerTask(const string& name, const string& path) : Task(name), _path(path)
-{}
-
-int ListenerTask::execute()
+void TaskQ::pop()
 {
-	// TODO
-	return 0;
+	_task_queue.pop();
+}
+
+shared_ptr<Task> TaskQ::safe_top() noexcept
+{
+	return _task_queue.size() ? _task_queue.top() : shared_ptr<Task>(nullptr);
+}
+
+void TaskQ::safe_pop() noexcept
+{
+	if (_task_queue.size()) {
+		_task_queue.pop();
+	}
 }
 
 
