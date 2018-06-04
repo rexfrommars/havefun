@@ -3,11 +3,12 @@
 
 #include <memory>
 
+#include "epollee.h"
+
 namespace flagstaff
 {
 
-class Task;
-
+class Epollee;
 class Engine
 {
 public:
@@ -20,8 +21,11 @@ public:
 	Engine(Engine&&) = delete;
 	Engine& operator= (Engine&&) = delete;
 
+	virtual int add_target(Epollee*) = 0;
+	virtual int del_target(Epollee*) = 0;
+
 	virtual int run() = 0;
-	virtual int addTask(const std::shared_ptr<Task> &) = 0;
+	virtual int stop() = 0;
 };
 
 Engine* GetEngineInstance();

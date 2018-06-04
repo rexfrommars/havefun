@@ -37,9 +37,10 @@ int main()
 {
 	std::cout << "flagstaff!!" << std::endl;
 
-	test_chrono();
-
-	flagstaff::IdleTask::InitIdleTask(3000);
+	flagstaff::SignalHandle::MaskSignals();
+	flagstaff::SignalHandle::Install();
+	flagstaff::IdleTask::InitIdleTask(10000);
 	auto engine = flagstaff::GetEngineInstance();
 	return engine->run();
 }
+

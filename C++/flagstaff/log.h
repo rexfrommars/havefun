@@ -16,6 +16,7 @@ public:
 	namespace { \
 		using std::endl; \
 		auto& _i = std::cout; \
+		auto& _w = std::cout; \
 		auto& _e = std::cerr; \
 	} \
 

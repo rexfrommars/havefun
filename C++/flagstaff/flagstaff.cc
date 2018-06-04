@@ -19,12 +19,29 @@ namespace {
 class FlagStaffEngine : public Engine
 {
 public:
-	int run();
-	int addTask(std::shared_ptr<Task> const & task)
+	int add_target(Epollee* target) override
 	{
-		TaskQ::push(task);
-		return 0;
+		_i << "to add target to engine: " << target->name() << endl;
+		int rc = _ctl(EPOLL_CTL_ADD, target->fd(), target->events(), target);
+		if (rc) {
+			// TODO
+			_i << rc << endl;
+		}
+		return rc;
 	}
+
+	int del_target(Epollee* target) override
+	{
+		_i << "to del target from engine: " << target->name() << endl;
+		int rc = _ctl(EPOLL_CTL_DEL, target->fd(), target->events(), target);
+		if (rc) {
+			// TODO
+		}
+		return rc;
+	}
+
+	int run() override;
+	int stop() override { _running = false; return 0; }
 
 	FlagStaffEngine();
 
@@ -37,13 +54,22 @@ private:
 
 	int _epoll_errno;
 	int _epollfd;
+	bool _running;
 
-	// TODO heere TIME-TASK-Q std::priority_queue
+	int _ctl(int op, int fd, uint64_t events, Epollee* target)
+	{
+		epoll_event event;
+		event.events = events;
+		event.data.ptr = target;
+
+		int rc = epoll_ctl(_epollfd, op, fd, &event);
+		return rc;
+	}
 };
 
 FlagStaffEngine* _engine = nullptr;
 
-}
+} // namespace
 
 Engine* flagstaff::GetEngineInstance()
 {
@@ -53,7 +79,7 @@ Engine* flagstaff::GetEngineInstance()
 	return _engine;
 }
 
-FlagStaffEngine::FlagStaffEngine() : Engine(), _epoll_errno(0), _epollfd(-1)
+FlagStaffEngine::FlagStaffEngine() : Engine(), _epoll_errno(0), _epollfd(-1), _running(true)
 {
 	_epollfd = epoll_create1(EPOLL_CLOEXEC);
 	_epoll_errno = errno;
@@ -64,7 +90,7 @@ int FlagStaffEngine::run()
 	// TODO
 
 	int wait_ms = -1;
-	while (true) {
+	while (_running) {
 		auto task = TaskQ::safe_top();
 		if (task) {
 			_i << task->name() << " | " << task->wait_time_ms() << endl;
@@ -82,7 +108,8 @@ int FlagStaffEngine::run()
 		cout << "wake up ... " << num << " | " << errno << endl;
 
 		if (num > 0) {
-			// TODO
+			Epollee* epollee = reinterpret_cast<Epollee*>(event.data.ptr);
+			epollee->onEvent(event.events);
 		}
 		else if (num == 0) {
 			// timeout
