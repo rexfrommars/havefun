@@ -10,6 +10,7 @@ SRCS= \
 	flagstaff.cc \
 	task.cc \
 	epollee.cc \
+	child.cc \
 	main.cc \
 
 
