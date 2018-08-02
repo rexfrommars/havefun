@@ -1,12 +1,16 @@
 #include <iostream>
 #include <memory>
 
+#include "log.h"
 #include "flagstaff.h"
 #include "task.h"
 #include "epollee.h"
 #include "conn.h"
+#include "child.h"
 
 using namespace std;
+
+_FS_LOG_
 
 void test_chrono()
 {
@@ -33,8 +37,20 @@ void test_chrono()
 	TaskQ::pop();
 }
 
+void test_child()
+{
+	_i << "test child!" << endl;
+	auto child = flagstaff::Child();
+	child.run();
+
+	return;
+}
+
 int main()
 {
+	test_child();
+	return 0;
+
 	std::cout << "flagstaff!!" << std::endl;
 
 	flagstaff::SignalHandle::MaskSignals();
