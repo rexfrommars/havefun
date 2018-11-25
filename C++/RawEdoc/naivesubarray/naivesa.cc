@@ -1,5 +1,4 @@
 #include <iostream>
-#include <iomanip>
 #include <array>
 
 using namespace std;
@@ -52,7 +51,7 @@ ostream& operator << (ostream& os, const _Stat<T, N> & s)
 	return os;
 }
 
-using Stat = _Stat<int, 512>;
+using Stat = _Stat<int, 1024>;
 
 int _solve(int* p, size_t len)
 {
@@ -65,7 +64,7 @@ int _solve(int* p, size_t len)
 	for(size_t c = 0; c < len; ++c) {
 		int i = p[c];
 		sa.add(i);
-		cout << " [" << c << "] " << i << " : " << sa[i] << " | : " << sa.ec << endl;
+		cout << " [" << c << "] " << i << " : " << sa[i] << " | " << sa.ec << endl;
 	}
 	cout << "even_count: " << sa.ec << endl;
 
@@ -105,8 +104,9 @@ int solve(std::array<int, S> a) {
 
 void test()
 {
-	std::array<int, 15> a = {2, 5, 2, 3, 6, 7, 8, 23, 23, 13, 65, 31, 3, 4, 3}; // 53
-	//std::array a = {6,1,7,4,6,7,1,4,7,1,4,6,6,7,4,1,6,4,7,1,4,5,3,2,1,6,9}; // 114
+	std::array<int, 4> a = {2, 2, 2, 3};
+	//std::array<int, 15> a = {2, 5, 2, 3, 6, 7, 8, 23, 23, 13, 65, 31, 3, 4, 3}; // 53
+	//std::array<int, 27> a = {6,1,7,4,6,7,1,4,7,1,4,6,6,7,4,1,6,4,7,1,4,5,3,2,1,6,9}; // 114
 
 	int result = solve(a);
 	cout << "result: " << result << endl;

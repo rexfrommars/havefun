@@ -3,99 +3,85 @@
 #include <set>
 #include <list>
 #include <algorithm>
-#include <limits>
 
 using namespace std;
-
-struct Item
-{
-	uint32_t i;
-	uint32_t v;
-
-	Item(uint32_t i, uint32_t v) : i(i), v(v) {}
-};
 
 struct X
 {
 	list<uint32_t> f;
-	uint32_t ei;
 
-	list<uint32_t> u {};
-	list<Item> iu {};
-	uint32_t ni {0};
+	vector<bool> bits;
+	vector<int> r;
+
+	uint32_t c;
+	uint32_t d;
 	
-	explicit X(const set<uint32_t>& factors, size_t expect_index) :
-		f(factors.begin(), factors.end()), ei(expect_index)
+	explicit X(const set<uint32_t>& factors) :
+		f(factors.begin(), factors.end()),
+		bits(1024 * 1024 * 1024, false), r()
 	{
-		iu.emplace_back(0, 1);
-		ni = 1;
+		bits[1] = true;
+		c = 0;
+		d = 0;
+		stride();
 	}
 
 	bool stride() {
-		if (iu.empty()) {
-			if (u.empty()) { return false; }
-			else {
-				iu.emplace_back(ni++, u.front());
-				u.pop_front();
-				if (ni > ei) { return true; }
+		while (++c < bits.size() && bits[c] == false) {}
+		if (c < bits.size()) {
+			uint32_t y = 0;
+
+#if 0
+			r.push_back(c);
+#else
+			y = c * f.front() + 1;
+			for (; d < y && d < bits.size(); ++d) {
+				if (bits[d]) {
+					r.push_back(d);
+				}
 			}
+#endif
+
+			// cout << "result: " << r.size() - 1 << " | " << r.back() << endl;
+
+			for (auto fi: f) {
+				y = c * fi + 1;
+				if (y < bits.size()) {
+					bits[y] = true;
+				}
+				else { return false; }
+			}
+
+			return true;
 		}
-
-		const auto item = iu.front();
-		iu.pop_front();
-
-		uint32_t nv = item.v * f.front() + 1;
-		while (u.size() && u.front() < nv) {
-			iu.emplace_back(ni++, u.front());
-			u.pop_front();
-			if (ni > ei) { return true; }
+		else {
+			return false;
 		}
-
-		// TODO enhance the logic
-		list<uint32_t> nl;
-		for (const auto& fi : f) {
-			uint32_t nv = item.v * fi + 1;
-			nl.emplace_back(nv);
-		}
-
-		u.merge(nl);
-
-		return true;
 	}
 
-	uint32_t get()
+	uint32_t get(size_t n)
 	{
-		while (ni <= ei && stride()) {}
+		while (r.size() < n + 1 && stride()) {}
 
-		if (ni > ei) {
-			for (auto rit = iu.crbegin(); rit != iu.crend(); ++rit) {
-				// cout << "Item: " << rit->i << " | " << rit->v << endl;
-				if (rit->i == ei) { return rit->v; }
-			}
-		}
-
-		throw logic_error("Cannot find!");
+		if (r.size() >= n + 1) {
+			return r[n];
+		} else { return -1; }
 	}
 };
 
 uint32_t n_linear(const std::set<uint32_t>& factors, size_t n)
 {
-	// cout << " ~~ ";
-	// for (const auto& fi: factors) {
-	// 	cout << fi << ", ";
-	// }
-	// cout << " ~~ " << n << endl;
+	for (const auto& fi: factors) {
+		cout << fi << ", ";
+	}
+	cout << endl;
 
-    X x(factors, n);
-    return x.get();
+    X x(factors);
+    return x.get(n);
 }
 
 void test()
 {
-	cout << n_linear({2,3}, 0) << endl;
-	cout << n_linear({2,3}, 1) << endl;
-	cout << n_linear({2,3}, 2) << endl;
-
 	cout << n_linear({2,3}, 10) << endl;
 	cout << n_linear({3,2}, 10) << endl;
 
@@ -104,11 +90,11 @@ void test()
 
 	cout << n_linear({2, 6}, 416) << endl;
 
-	cout << n_linear({2, 3}, 200000) << endl; // 133028635
+	//cout << n_linear({2, 3}, 2000000) << endl; // 133028635
 
 	cout << n_linear({10, 13}, 741) << endl; // 3172655773
 	// 3172655773
-	// 2468256519
+	// 883708281
 
 	return;
 
