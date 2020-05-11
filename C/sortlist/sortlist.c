@@ -16,12 +16,14 @@ struct ListNode {
 
 void _show_list(int line, struct ListNode* list)
 {
+    #if 0
     printf("\n %d  -- ", line);
     while (list != NULL) {
         printf(" . %d", list->val);
         list = list->next;
     }
     printf("\n");
+    #endif
 }
 
 
@@ -43,8 +45,6 @@ void show_list(struct ListNode* list) {
 typedef struct ListNode ListNode;
 
 struct Context {
-    bool    done;
-
     ListNode*   list;
 
     ListNode*   result_h;
@@ -108,7 +108,6 @@ void ctx_cut(Context* ctx) {
 void ctx_init(Context* ctx, ListNode* list) {
     _TAG_;
     if (list != NULL && list->next != NULL) {
-        ctx->done = false;
         ctx->list = list;
 
         ctx_cut(ctx);
@@ -125,16 +124,11 @@ void ctx_init(Context* ctx, ListNode* list) {
         ctx->result_t = NULL; // incorrect, but we don't care
         ctx->slice_h = NULL;
         ctx->slice_t = NULL;
-        ctx->done = true;
     }
 }
 
 void ctx_merge(Context* ctx) {
     _TAG_;
-
-    if (ctx->list == NULL) {
-        ctx->done = true;
-    }
 
     ListNode* h = NULL;
     ListNode* a = NULL;
@@ -188,7 +182,7 @@ struct ListNode* sortList(struct ListNode* head) {
     Context ctx;
     ctx_init(&ctx, head);
 
-    while (ctx.done == false) {
+    while (ctx.list != NULL) {
         ctx_cut(&ctx);
         show_list(ctx.slice_h);
         ctx_merge(&ctx);
@@ -197,8 +191,6 @@ struct ListNode* sortList(struct ListNode* head) {
 
     return ctx.result_h;
 }
-
-
 
 
 ////
@@ -218,17 +210,20 @@ ListNode* make_list(int* a, size_t len) {
     return result.next;
 }
 
+#include "data.c"
+
 int main() {
 
     //int a[] = {4,2,1,3};
     //int a[] = {-1, 5, 3, 4, 0};
-    int a[] = {2,1};
+    //int a[] = {2,1};
 
-    ListNode* list = make_list(a, sizeof(a) / sizeof(int));
-    show_list(list);
+    ListNode* list = make_list(BigArray, sizeof(BigArray) / sizeof(int));
+    //show_list(list);
 
     ListNode* sorted = sortList(list);
-    show_list(sorted);
+    (void)sorted;
+    //show_list(sorted);
 
     return 0;
 }
