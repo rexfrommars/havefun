@@ -52,12 +52,16 @@ struct Context {
 
     ListNode*   slice_h;
     ListNode*   slice_t;
+
+    ListNode*   hot;
+
+    ListNode*   spots[];
 };
 typedef struct Context Context;
 
 
 void ctx_cut(Context* ctx) {
-    _TAG_;
+    //_TAG_;
     assert(ctx->list != NULL);
 
     ListNode* h = ctx->list;
@@ -80,7 +84,7 @@ void ctx_cut(Context* ctx) {
         t->next = NULL;
 
         while (ctx->list != NULL && ctx->list->val <= h->val) {
-            _TAG_;
+            //_TAG_;
             ListNode* n = ctx->list;
             ctx->list = ctx->list->next; // set ctx->list
             n->next = h;
@@ -107,6 +111,9 @@ void ctx_cut(Context* ctx) {
 
 void ctx_init(Context* ctx, ListNode* list) {
     _TAG_;
+
+    ctx->hot = NULL;
+
     if (list != NULL && list->next != NULL) {
         ctx->list = list;
 
@@ -138,12 +145,32 @@ void ctx_merge(Context* ctx) {
         h = ctx->result_h;
         a = ctx->result_h;
         b = ctx->slice_h;
+        _TAG_;
+
+        if (ctx->hot != NULL && ctx->hot->val <= b->val) {
+            _TAG_; // hit
+            a = ctx->hot;
+        }
     }
     else {
         h = ctx->slice_h;
         a = ctx->slice_h;
         b = ctx->result_h;
     }
+
+    // find first spot
+    while (a->next != NULL && a->next->val <= b->val) {
+        a = a->next;
+    }
+
+    if (a->next == NULL) {
+        // ALL DONE
+        a->next = b;
+        goto tag_done;
+    }
+    // else: have found the spot
+    ctx->hot = a;
+    printf("new hotspot: %d\n", a->val);
 
     // merge b to a
     while (b != NULL) {
@@ -164,11 +191,12 @@ void ctx_merge(Context* ctx) {
             a->next = n;
 
             // b = NULL // ALL DONE!
-            break;
+            goto tag_done;
         }
     }
 
     // done
+tag_done:
     ctx->result_h = h;
     ctx->result_t = a;
     ctx->slice_h = NULL;
